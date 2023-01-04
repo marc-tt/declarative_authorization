@@ -1,7 +1,6 @@
 require 'test_helper'
 require File.join(File.dirname(__FILE__), %w{.. .. lib declarative_authorization development_support change_analyzer})
 
-
 class ChangeAnalyzerTest < Test::Unit::TestCase
 
   # TODO further tests
@@ -26,13 +25,13 @@ class ChangeAnalyzerTest < Test::Unit::TestCase
     another_user = MockUser.new(:test_role)
 
     approaches = analyzer.find_approaches_for(:add, :permission, :on => :permissions,
-        :to => :read, :users => [user_to_extend_permissions, another_user]) do
+                                              :to => :read, :users => [user_to_extend_permissions, another_user]) do
       assert permit?(:read, :context => :permissions, :user => users.first)
       assert !permit?(:read, :context => :permissions, :user => users[1])
     end
 
     #approaches.each {|approach| p approach}
-    assert approaches.any? {|approach| approach.steps.any? {|step| step.first == :add_privilege and step.last.to_sym == :test_role_2}}
+    assert approaches.any? { |approach| approach.steps.any? { |step| step.first == :add_privilege and step.last.to_sym == :test_role_2 } }
   end
 
   def test_adding_permission_by_assigning_role
@@ -53,7 +52,7 @@ class ChangeAnalyzerTest < Test::Unit::TestCase
     another_user = MockUser.new(:test_role)
 
     approaches = analyzer.find_approaches_for(:add, :permission, :on => :permissions,
-        :to => :read, :users => [user_to_extend_permissions, another_user]) do
+                                              :to => :read, :users => [user_to_extend_permissions, another_user]) do
       assert permit?(:read, :context => :permissions, :user => users.first)
       assert !permit?(:read, :context => :permissions, :user => users[1])
     end
@@ -78,7 +77,7 @@ class ChangeAnalyzerTest < Test::Unit::TestCase
     another_user = MockUser.new(:test_role)
 
     approaches = analyzer.find_approaches_for(:add, :permission, :on => :permissions,
-        :to => :read, :users => [user_to_extend_permissions, another_user]) do
+                                              :to => :read, :users => [user_to_extend_permissions, another_user]) do
       assert permit?(:read, :context => :permissions, :user => users.first)
       assert !permit?(:read, :context => :permissions, :user => users[1])
     end
@@ -106,7 +105,7 @@ class ChangeAnalyzerTest < Test::Unit::TestCase
     another_user = MockUser.new(:test_role)
 
     approaches = analyzer.find_approaches_for(:add, :permission, :on => :permissions,
-        :to => :read, :users => [another_user, user_to_extend_permissions]) do
+                                              :to => :read, :users => [another_user, user_to_extend_permissions]) do
       assert permit?(:read, :context => :permissions, :user => users[1])
       assert !permit?(:read, :context => :permissions, :user => users[0])
     end
@@ -131,14 +130,14 @@ class ChangeAnalyzerTest < Test::Unit::TestCase
     user_to_remove_permissions_from = MockUser.new(:test_role)
 
     approaches = analyzer.find_approaches_for(:remove, :permission, :on => :permissions,
-        :to => :read, :users => [user_to_remove_permissions_from]) do
+                                              :to => :read, :users => [user_to_remove_permissions_from]) do
       assert !permit?(:read, :context => :permissions, :user => users.first)
     end
 
     # either: remove that privilege from :test_role
-    assert approaches[0,2].any? {|approach| approach.changes.length == 1 and approach.changes.first.first == :remove_privilege }
+    assert approaches[0, 2].any? { |approach| approach.changes.length == 1 and approach.changes.first.first == :remove_privilege }
     # or: remove that role from the user
-    assert approaches[0,2].any? {|approach| approach.changes.length == 1 and approach.changes.first.first == :remove_role_from_user }
+    assert approaches[0, 2].any? { |approach| approach.changes.length == 1 and approach.changes.first.first == :remove_role_from_user }
   end
 
   def test_moving_permission
@@ -159,13 +158,13 @@ class ChangeAnalyzerTest < Test::Unit::TestCase
     user_to_keep_permission = MockUser.new(:test_role, :test_role_2)
 
     approaches = analyzer.find_approaches_for(:remove, :permission, :on => :permissions,
-          :to => :read, :users => [user_to_remove_permissions_from, user_to_keep_permission]) do
+                                              :to => :read, :users => [user_to_remove_permissions_from, user_to_keep_permission]) do
       assert !permit?(:read, :context => :permissions, :user => users.first)
       assert permit?(:read, :context => :permissions, :user => users[1])
     end
 
-    assert approaches.find {|approach| approach.steps.find {|step| step.first == :remove_privilege}}
-    assert approaches.find {|approach| approach.steps.find {|step| step.first == :add_privilege}}
+    assert approaches.find { |approach| approach.steps.find { |step| step.first == :remove_privilege } }
+    assert approaches.find { |approach| approach.steps.find { |step| step.first == :add_privilege } }
   end
 
   def test_removing_permission_adding_role
@@ -185,7 +184,7 @@ class ChangeAnalyzerTest < Test::Unit::TestCase
     user_to_keep_permission = MockUser.new(:test_role)
 
     approaches = analyzer.find_approaches_for(:remove, :permission, :on => :permissions,
-        :to => :read, :users => [user_to_remove_permissions_from, user_to_keep_permission]) do
+                                              :to => :read, :users => [user_to_remove_permissions_from, user_to_keep_permission]) do
       assert !permit?(:read, :context => :permissions, :user => users.first)
       assert permit?(:read, :context => :permissions_2, :user => users.first)
       assert permit?(:read, :context => :permissions, :user => users[1])
@@ -194,7 +193,7 @@ class ChangeAnalyzerTest < Test::Unit::TestCase
 
     # solution: add a new role
     refute_equal 0, approaches.length
-    assert approaches.any? {|approach| approach.users.first.role_symbols.include?(:test_role) }
+    assert approaches.any? { |approach| approach.users.first.role_symbols.include?(:test_role) }
   end
 
   def test_removing_user_role_assignment
@@ -213,13 +212,13 @@ class ChangeAnalyzerTest < Test::Unit::TestCase
     user_to_keep_permission = MockUser.new(:test_role)
 
     approaches = analyzer.find_approaches_for(:remove, :permission, :on => :permissions,
-        :to => :read, :users => [user_to_remove_permissions_from, user_to_keep_permission]) do
+                                              :to => :read, :users => [user_to_remove_permissions_from, user_to_keep_permission]) do
       assert !permit?(:read, :context => :permissions, :user => users.first)
       assert permit?(:read, :context => :permissions, :user => users[1])
     end
 
     # solutions: remove user-role assignment for first user
     refute_equal 0, approaches.length
-    assert approaches.any? {|approach| approach.users.first.role_symbols.empty? }
+    assert approaches.any? { |approach| approach.users.first.role_symbols.empty? }
   end
 end

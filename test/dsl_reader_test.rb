@@ -12,7 +12,7 @@ class DSLReaderTest < Test::Unit::TestCase
     }
     assert_equal 2, reader.privileges_reader.privileges.length
     assert_equal [[:lower_priv, nil]],
-      reader.privileges_reader.privilege_hierarchy[:test_priv]
+                 reader.privileges_reader.privilege_hierarchy[:test_priv]
   end
 
   def test_privileges_with_context
@@ -25,7 +25,7 @@ class DSLReaderTest < Test::Unit::TestCase
       end
     }
     assert_equal [[:lower_priv, :test_context]],
-      reader.privileges_reader.privilege_hierarchy[:test_priv]
+                 reader.privileges_reader.privilege_hierarchy[:test_priv]
   end
 
   def test_privileges_one_line
@@ -38,11 +38,11 @@ class DSLReaderTest < Test::Unit::TestCase
       end
     }
     assert_equal [[:lower_priv, :test_context]],
-      reader.privileges_reader.privilege_hierarchy[:test_priv]
+                 reader.privileges_reader.privilege_hierarchy[:test_priv]
     assert_equal [[:lower_priv, :test_context]],
-      reader.privileges_reader.privilege_hierarchy[:test_priv_2]
+                 reader.privileges_reader.privilege_hierarchy[:test_priv_2]
     assert_equal [[:lower_priv, nil]],
-      reader.privileges_reader.privilege_hierarchy[:test_priv_3]
+                 reader.privileges_reader.privilege_hierarchy[:test_priv_3]
   end
 
   def test_auth_role

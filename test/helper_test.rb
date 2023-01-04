@@ -1,11 +1,11 @@
 require 'test_helper'
 require File.join(File.dirname(__FILE__), %w{.. lib declarative_authorization helper})
 
-
 class HelperMocksController < MocksController
   filter_access_to :action, :require => :show, :context => :mocks
   define_action_methods :action
 end
+
 class HelperTest < ActionController::TestCase
   tests HelperMocksController
   include Authorization::AuthorizationHelper
@@ -143,7 +143,7 @@ class HelperTest < ActionController::TestCase
     assert !block_evaled
 
     block_evaled = false
-    has_any_role?(:test_role,:test_role2) do
+    has_any_role?(:test_role, :test_role2) do
       block_evaled = true
     end
     assert block_evaled
@@ -156,7 +156,7 @@ class HelperTest < ActionController::TestCase
       end
     }
     request!(nil, :action, reader)
-#test intermittently fails
+    #test intermittently fails
     assert !has_role?(:test_role)
 
     block_evaled = false
@@ -224,7 +224,7 @@ class HelperTest < ActionController::TestCase
 
     assert has_any_role_with_hierarchy?(:test_role)
     assert !has_any_role_with_hierarchy?(:other_role)
-    assert has_any_role_with_hierarchy?(:test_role,:other_role)
+    assert has_any_role_with_hierarchy?(:test_role, :other_role)
 
     block_evaled = false
     has_any_role_with_hierarchy?(:test_role) do
@@ -239,7 +239,7 @@ class HelperTest < ActionController::TestCase
     assert !block_evaled
 
     block_evaled = false
-    has_any_role_with_hierarchy?(:test_role,:test_role2) do
+    has_any_role_with_hierarchy?(:test_role, :test_role2) do
       block_evaled = true
     end
     assert block_evaled

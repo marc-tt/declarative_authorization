@@ -10,7 +10,7 @@ class MaintenanceTest < Test::Unit::TestCase
     usage_test_controller.filter_access_to :an_action
 
     assert Authorization::Maintenance::Usage::usages_by_controller.
-              include?(usage_test_controller)
+      include?(usage_test_controller)
   end
 
   def test_without_access_control
@@ -24,22 +24,22 @@ class MaintenanceTest < Test::Unit::TestCase
     }
     engine = Authorization::Engine.new(reader)
     assert !engine.permit?(:test_2, :context => :permissions,
-        :user => MockUser.new(:test_role))
+                           :user => MockUser.new(:test_role))
     Authorization::Maintenance::without_access_control do
       assert engine.permit!(:test_2, :context => :permissions,
-          :user => MockUser.new(:test_role))
+                            :user => MockUser.new(:test_role))
     end
     without_access_control do
       assert engine.permit?(:test_2, :context => :permissions,
-          :user => MockUser.new(:test_role))
+                            :user => MockUser.new(:test_role))
     end
     Authorization::Maintenance::without_access_control do
       Authorization::Maintenance::without_access_control do
         assert engine.permit?(:test_2, :context => :permissions,
-            :user => MockUser.new(:test_role))
+                              :user => MockUser.new(:test_role))
       end
       assert engine.permit?(:test_2, :context => :permissions,
-          :user => MockUser.new(:test_role))
+                            :user => MockUser.new(:test_role))
     end
   end
 

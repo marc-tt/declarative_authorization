@@ -175,6 +175,10 @@ module Authorization
       end
 
       class MergeableRulesProcessor < GeneralAuthorizationProcessor
+        def initialize(analyzer)
+          super
+          @has_permission = []
+        end
         def analyze_rules
           if @has_permission
             #p @has_permission

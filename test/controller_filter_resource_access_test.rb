@@ -5,10 +5,12 @@ class BasicResource < MockDataObject
     "BasicResource"
   end
 end
+
 class BasicResourcesController < MocksController
   filter_resource_access :strong_parameters => false
   define_resource_actions
 end
+
 class BasicResourcesControllerTest < ActionController::TestCase
   def test_basic_filter_index
     reader = Authorization::Reader::DSLReader.new
@@ -61,14 +63,13 @@ class BasicResourcesControllerTest < ActionController::TestCase
     }
 
     allowed_user = MockUser.new(:allowed_role)
-    request!(allowed_user, :new, reader, :basic_resource => {:id => "2"})
+    request!(allowed_user, :new, reader, :basic_resource => { :id => "2" })
     assert !@controller.authorized?
-    request!(allowed_user, :new, reader, :basic_resource => {:id => "1"},
-        :clear => [:@basic_resource])
+    request!(allowed_user, :new, reader, :basic_resource => { :id => "1" },
+             :clear => [:@basic_resource])
     assert @controller.authorized?
   end
 end
-
 
 class NestedResource < MockDataObject
   def initialize(attributes = {})
@@ -77,6 +78,7 @@ class NestedResource < MockDataObject
     end
     super(attributes)
   end
+
   def self.name
     "NestedResource"
   end
@@ -89,6 +91,7 @@ class ShallowNestedResource < MockDataObject
     end
     super(attributes)
   end
+
   def self.name
     "ShallowNestedResource"
   end
@@ -100,6 +103,7 @@ class ParentMock < MockDataObject
       def initialize(parent_mock)
         @parent_mock = parent_mock
       end
+
       def new(attributes = {})
         NestedResource.new(attributes.merge(:parent_mock => @parent_mock))
       end
@@ -111,6 +115,7 @@ class ParentMock < MockDataObject
   def ==(other)
     id == other.id
   end
+
   def self.name
     "ParentMock"
   end
@@ -120,6 +125,7 @@ class NestedResourcesController < MocksController
   filter_resource_access :nested_in => :parent_mocks, :strong_parameters => false
   define_resource_actions
 end
+
 class NestedResourcesControllerTest < ActionController::TestCase
   def test_nested_filter_index
     reader = Authorization::Reader::DSLReader.new
@@ -137,10 +143,10 @@ class NestedResourcesControllerTest < ActionController::TestCase
     request!(MockUser.new(:another_role), :index, reader, :parent_mock_id => "2")
     assert !@controller.authorized?
     request!(allowed_user, :index, reader, :parent_mock_id => "2",
-        :clear => [:@nested_resource, :@parent_mock])
+             :clear => [:@nested_resource, :@parent_mock])
     assert !@controller.authorized?
     request!(allowed_user, :index, reader, :parent_mock_id => "1",
-        :clear => [:@nested_resource, :@parent_mock])
+             :clear => [:@nested_resource, :@parent_mock])
     assert @controller.authorized?
   end
 
@@ -160,7 +166,7 @@ class NestedResourcesControllerTest < ActionController::TestCase
     request!(allowed_user, :show, reader, :id => "2", :parent_mock_id => "2")
     assert !@controller.authorized?
     request!(allowed_user, :show, reader, :id => "1", :parent_mock_id => "1",
-        :clear => [:@nested_resource, :@parent_mock])
+             :clear => [:@nested_resource, :@parent_mock])
     assert @controller.authorized?
   end
 
@@ -178,11 +184,11 @@ class NestedResourcesControllerTest < ActionController::TestCase
 
     allowed_user = MockUser.new(:allowed_role)
     request!(allowed_user, :new, reader, :parent_mock_id => "2",
-        :nested_resource => {:id => "2"})
+             :nested_resource => { :id => "2" })
     assert !@controller.authorized?
     request!(allowed_user, :new, reader, :parent_mock_id => "1",
-        :nested_resource => {:id => "1"},
-        :clear => [:@nested_resource, :@parent_mock])
+             :nested_resource => { :id => "1" },
+             :clear => [:@nested_resource, :@parent_mock])
     assert @controller.authorized?
   end
 end
@@ -195,6 +201,7 @@ class ShallowNestedResourcesController < MocksController
   define_resource_actions
   define_action_methods :additional_member_action
 end
+
 class ShallowNestedResourcesControllerTest < ActionController::TestCase
   def test_nested_filter_index
     reader = Authorization::Reader::DSLReader.new
@@ -212,10 +219,10 @@ class ShallowNestedResourcesControllerTest < ActionController::TestCase
     request!(MockUser.new(:another_role), :index, reader, :parent_mock_id => "2")
     assert !@controller.authorized?
     request!(allowed_user, :index, reader, :parent_mock_id => "2",
-        :clear => [:@shallow_nested_resource, :@parent_mock])
+             :clear => [:@shallow_nested_resource, :@parent_mock])
     assert !@controller.authorized?
     request!(allowed_user, :index, reader, :parent_mock_id => "1",
-        :clear => [:@shallow_nested_resource, :@parent_mock])
+             :clear => [:@shallow_nested_resource, :@parent_mock])
     assert @controller.authorized?
   end
 
@@ -235,7 +242,7 @@ class ShallowNestedResourcesControllerTest < ActionController::TestCase
     request!(allowed_user, :show, reader, :id => "2", :parent_mock_id => "2")
     assert !@controller.authorized?
     request!(allowed_user, :show, reader, :id => "1",
-        :clear => [:@shallow_nested_resource, :@parent_mock])
+             :clear => [:@shallow_nested_resource, :@parent_mock])
     assert @controller.authorized?
   end
 
@@ -253,11 +260,11 @@ class ShallowNestedResourcesControllerTest < ActionController::TestCase
 
     allowed_user = MockUser.new(:allowed_role)
     request!(allowed_user, :new, reader, :parent_mock_id => "2",
-        :shallow_nested_resource => {:id => "2"})
+             :shallow_nested_resource => { :id => "2" })
     assert !@controller.authorized?
     request!(allowed_user, :new, reader, :parent_mock_id => "1",
-        :shallow_nested_resource => {:id => "1"},
-        :clear => [:@shallow_nested_resource, :@parent_mock])
+             :shallow_nested_resource => { :id => "1" },
+             :clear => [:@shallow_nested_resource, :@parent_mock])
     assert @controller.authorized?
   end
 
@@ -277,20 +284,21 @@ class ShallowNestedResourcesControllerTest < ActionController::TestCase
     request!(allowed_user, :additional_member_action, reader, :id => "2", :parent_mock_id => "2")
     assert !@controller.authorized?
     request!(allowed_user, :additional_member_action, reader, :id => "1",
-        :clear => [:@shallow_nested_resource, :@parent_mock])
+             :clear => [:@shallow_nested_resource, :@parent_mock])
     assert @controller.authorized?
   end
 end
-
 
 class CustomMembersCollectionsResourceController < MocksController
   def self.controller_name
     "basic_resources"
   end
+
   filter_resource_access :member => [[:other_show, :read]],
-      :collection => {:search => :read}, :new => [:other_new], :strong_parameters => false
+                         :collection => { :search => :read }, :new => [:other_new], :strong_parameters => false
   define_action_methods :other_new, :search, :other_show
 end
+
 class CustomMembersCollectionsResourceControllerTest < ActionController::TestCase
   def test_custom_members_filter_search
     reader = Authorization::Reader::DSLReader.new
@@ -342,24 +350,25 @@ class CustomMembersCollectionsResourceControllerTest < ActionController::TestCas
     }
 
     allowed_user = MockUser.new(:allowed_role)
-    request!(allowed_user, :other_new, reader, :basic_resource => {:id => "2"})
+    request!(allowed_user, :other_new, reader, :basic_resource => { :id => "2" })
     assert !@controller.authorized?
-    request!(allowed_user, :other_new, reader, :basic_resource => {:id => "1"},
-        :clear => [:@basic_resource])
+    request!(allowed_user, :other_new, reader, :basic_resource => { :id => "1" },
+             :clear => [:@basic_resource])
     assert @controller.authorized?
   end
 end
-
 
 class AdditionalMembersCollectionsResourceController < MocksController
   def self.controller_name
     "basic_resources"
   end
+
   filter_resource_access :additional_member => :other_show,
-      :additional_collection => [:search], :additional_new => {:other_new => :new}, :strong_parameters => false
+                         :additional_collection => [:search], :additional_new => { :other_new => :new }, :strong_parameters => false
   define_resource_actions
   define_action_methods :other_new, :search, :other_show
 end
+
 class AdditionalMembersCollectionsResourceControllerTest < ActionController::TestCase
   def test_additional_members_filter_search_index
     reader = Authorization::Reader::DSLReader.new
@@ -419,31 +428,30 @@ class AdditionalMembersCollectionsResourceControllerTest < ActionController::Tes
     }
 
     allowed_user = MockUser.new(:allowed_role)
-    request!(allowed_user, :other_new, reader, :basic_resource => {:id => "2"})
+    request!(allowed_user, :other_new, reader, :basic_resource => { :id => "2" })
     assert !@controller.authorized?
-    request!(allowed_user, :new, reader, :basic_resource => {:id => "2"},
-        :clear => [:@basic_resource])
+    request!(allowed_user, :new, reader, :basic_resource => { :id => "2" },
+             :clear => [:@basic_resource])
     assert !@controller.authorized?
 
-    request!(allowed_user, :other_new, reader, :basic_resource => {:id => "1"},
-        :clear => [:@basic_resource])
+    request!(allowed_user, :other_new, reader, :basic_resource => { :id => "1" },
+             :clear => [:@basic_resource])
     assert @controller.authorized?
-    request!(allowed_user, :new, reader, :basic_resource => {:id => "1"},
-        :clear => [:@basic_resource])
+    request!(allowed_user, :new, reader, :basic_resource => { :id => "1" },
+             :clear => [:@basic_resource])
     assert @controller.authorized?
   end
 end
-
 
 class CustomMethodsResourceController < MocksController
   # not implemented yet
 end
 
-
 class ExplicitContextResourceController < MocksController
   filter_resource_access :context => :basic_resources, :strong_parameters => false
   define_resource_actions
 end
+
 class ExplicitContextResourceControllerTest < ActionController::TestCase
   def test_explicit_context_filter_index
     reader = Authorization::Reader::DSLReader.new
@@ -496,10 +504,10 @@ class ExplicitContextResourceControllerTest < ActionController::TestCase
     }
 
     allowed_user = MockUser.new(:allowed_role)
-    request!(allowed_user, :new, reader, :basic_resource => {:id => "2"})
+    request!(allowed_user, :new, reader, :basic_resource => { :id => "2" })
     assert !@controller.authorized?
-    request!(allowed_user, :new, reader, :basic_resource => {:id => "1"},
-        :clear => [:@basic_resource])
+    request!(allowed_user, :new, reader, :basic_resource => { :id => "1" },
+             :clear => [:@basic_resource])
     assert @controller.authorized?
   end
 end
@@ -514,14 +522,17 @@ class StrongResourcesController < MocksController
   def self.controller_name
     "strong_resources"
   end
+
   filter_resource_access :strong_parameters => true
   define_resource_actions
 
   private
+
   def strong_resource_params
     params.require(:strong_resource).permit(:test_param1, :test_param2)
   end
 end
+
 class StrongResourcesControllerTest < ActionController::TestCase
   def test_still_authorized_with_strong_params
     reader = Authorization::Reader::DSLReader.new
@@ -553,8 +564,8 @@ class StrongResourcesControllerTest < ActionController::TestCase
     }
 
     allowed_user = MockUser.new(:allowed_role)
-    request!(allowed_user, :new, reader, :strong_resource => {:id => "1"},
-        :clear => [:@strong_resource])
+    request!(allowed_user, :new, reader, :strong_resource => { :id => "1" },
+             :clear => [:@strong_resource])
     assert @controller.authorized?
 
     # allowed_user = MockUser.new(:allowed_role)

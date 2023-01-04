@@ -1,6 +1,5 @@
 require 'test_helper'
 
-
 class LoadMockObject < MockDataObject
   def self.name
     "LoadMockObject"
@@ -15,6 +14,7 @@ class ActionController::Base
       filters = _process_action_callbacks.select { |c| c.kind == :before }
       filters.map! { |c| c.raw_filter }
     end
+
     alias_method :before_filters, :before_actions
   end
 end
@@ -25,12 +25,12 @@ class SpecificMocksController < MocksController
   filter_access_to :show
   filter_access_to :edit, :create, :require => :test, :context => :permissions
   filter_access_to :edit_2, :require => :test, :context => :permissions,
-    :attribute_check => true, :model => LoadMockObject
+                   :attribute_check => true, :model => LoadMockObject
   filter_access_to :new, :require => :test, :context => :permissions
 
   filter_access_to [:action_group_action_1, :action_group_action_2]
   define_action_methods :test_action, :test_action_2, :show, :edit, :create,
-    :edit_2, :new, :unprotected_action, :action_group_action_1, :action_group_action_2
+                        :edit_2, :new, :unprotected_action, :action_group_action_1, :action_group_action_2
 end
 
 class BasicControllerTest < ActionController::TestCase
@@ -153,10 +153,10 @@ class BasicControllerTest < ActionController::TestCase
     }
     mock_object = MockDataObject.new(:id => 5)
     @controller.send(:instance_variable_set, :"@load_mock_object",
-        mock_object)
+                     mock_object)
     request!(MockUser.new(:test_role), "edit_2", reader)
     assert_equal mock_object,
-      @controller.send(:instance_variable_get, :"@load_mock_object")
+                 @controller.send(:instance_variable_get, :"@load_mock_object")
     assert @controller.authorized?
   end
 
@@ -179,15 +179,16 @@ class BasicControllerTest < ActionController::TestCase
   end
 end
 
-
 ##################
 class AllMocksController < MocksController
   filter_access_to :all
   filter_access_to :view, :require => :test, :context => :permissions
   define_action_methods :show, :view
 end
+
 class AllActionsControllerTest < ActionController::TestCase
   tests AllMocksController
+
   def test_filter_access_all
     reader = Authorization::Reader::DSLReader.new
     reader.parse %{
@@ -210,32 +211,35 @@ class AllActionsControllerTest < ActionController::TestCase
   end
 end
 
-
 ##################
 class LoadMockObjectsController < MocksController
   before_action { @@load_method_call_count = 0 }
   filter_access_to :show, :attribute_check => true, :model => LoadMockObject
   filter_access_to :edit, :attribute_check => true
   filter_access_to :update, :delete, :attribute_check => true,
-                   :load_method => proc {MockDataObject.new(:test => 1)}
+                   :load_method => proc { MockDataObject.new(:test => 1) }
   filter_access_to :create do
     permitted_to! :edit, :load_mock_objects
   end
   filter_access_to :view, :attribute_check => true, :load_method => :load_method
+
   def load_method
     self.class.load_method_called
     MockDataObject.new(:test => 2)
   end
+
   define_action_methods :show, :edit, :update, :delete, :create, :view
 
   def self.load_method_called
     @@load_method_call_count ||= 0
     @@load_method_call_count += 1
   end
+
   def self.load_method_call_count
     @@load_method_call_count || 0
   end
 end
+
 class LoadObjectControllerTest < ActionController::TestCase
   tests LoadMockObjectsController
 
@@ -256,11 +260,11 @@ class LoadObjectControllerTest < ActionController::TestCase
     assert !@controller.authorized?
 
     request!(MockUser.new(:test_role), "show", reader, :id => 1,
-      :clear => [:@load_mock_object])
+             :clear => [:@load_mock_object])
     assert @controller.authorized?
 
     request!(MockUser.new(:test_role), "edit", reader, :id => 1,
-      :clear => [:@load_mock_object])
+             :clear => [:@load_mock_object])
     assert @controller.authorized?
     assert @controller.instance_variable_defined?(:@load_mock_object)
   end
@@ -342,14 +346,14 @@ class LoadObjectControllerTest < ActionController::TestCase
   end
 end
 
-
 ##################
 class AccessOverwritesController < MocksController
   filter_access_to :test_action, :test_action_2,
-    :require => :test, :context => :permissions_2
+                   :require => :test, :context => :permissions_2
   filter_access_to :test_action, :require => :test, :context => :permissions
   define_action_methods :test_action, :test_action_2
 end
+
 class AccessOverwritesControllerTest < ActionController::TestCase
   def test_filter_access_overwrite
     reader = Authorization::Reader::DSLReader.new
@@ -368,12 +372,12 @@ class AccessOverwritesControllerTest < ActionController::TestCase
   end
 end
 
-
 ##################
 class PeopleController < MocksController
   filter_access_to :all
   define_action_methods :show
 end
+
 class PluralizationControllerTest < ActionController::TestCase
   tests PeopleController
 
@@ -391,21 +395,24 @@ class PluralizationControllerTest < ActionController::TestCase
   end
 end
 
-
 ##################
 class CommonController < MocksController
   filter_access_to :delete, :context => :common
   filter_access_to :all
 end
+
 class CommonChild1Controller < CommonController
   filter_access_to :all, :context => :context_1
 end
+
 class CommonChild2Controller < CommonController
   filter_access_to :delete
   define_action_methods :show, :delete
 end
+
 class HierachicalControllerTest < ActionController::TestCase
   tests CommonChild2Controller
+
   def test_controller_hierarchy
     reader = Authorization::Reader::DSLReader.new
     reader.parse %{
@@ -430,8 +437,10 @@ module Name
     define_action_methods :show, :update
   end
 end
+
 class NameSpacedControllerTest < ActionController::TestCase
   tests Name::SpacedThingsController
+
   def test_context
     reader = Authorization::Reader::DSLReader.new
     reader.parse %{
@@ -466,8 +475,10 @@ module Deep
     end
   end
 end
+
 class DeepNameSpacedControllerTest < ActionController::TestCase
   tests Deep::NameSpaced::ThingsController
+
   def test_context
     reader = Authorization::Reader::DSLReader.new
     reader.parse %{

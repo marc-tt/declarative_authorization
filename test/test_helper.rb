@@ -6,14 +6,13 @@ require 'bundler/setup'
 begin
   # rails 3
   require 'rails/all'
-  rescue LoadError
+rescue LoadError
   # rails 2.3
-  %w(action_pack action_controller active_record active_support initializer).each {|f| require f}
+  %w(action_pack action_controller active_record active_support initializer).each { |f| require f }
 end
 Bundler.require
 
 require 'minitest/autorun'
-
 
 puts "Testing against rails #{Rails::VERSION::STRING}"
 
@@ -61,7 +60,7 @@ end
 class MockUser < MockDataObject
   def initialize(*roles)
     options = roles.last.is_a?(::Hash) ? roles.pop : {}
-    super({:role_symbols => roles, :login => hash}.merge(options))
+    super({ :role_symbols => roles, :login => hash }.merge(options))
   end
 
   def initialize_copy(other)
@@ -95,9 +94,12 @@ class MocksController < ActionController::Base
       def warn(*args)
         #p args
       end
+
       alias_method :info, :warn
       alias_method :debug, :warn
+
       def warn?; end
+
       alias_method :info?, :warn?
       alias_method :debug?, :warn?
     end.new
@@ -114,8 +116,10 @@ class TestApp
     initialize!
   end
 end
+
 class ApplicationController < ActionController::Base
 end
+
 #Rails::Application.routes.draw do
 if Rails.version.start_with? '4'
   Rails.application.routes.draw do
@@ -123,6 +127,7 @@ if Rails.version.start_with? '4'
     match '/deep/name_spaced/things(/:action)' => 'deep/name_spaced/things', :via => [:get, :post, :put, :patch, :delete]
     match '/:controller(/:action(/:id))', :via => [:get, :post, :put, :patch, :delete]
   end
+
   class TestApp
     class Application < ::Rails::Application
       config.secret_key_base = 'thisstringdoesnothing'
@@ -130,9 +135,9 @@ if Rails.version.start_with? '4'
   end
 else
   Rails.application.routes.draw do
-   get '/name/spaced_things(/:action)' => 'name/spaced_things'
-   get '/deep/name_spaced/things(/:action)' => 'deep/name_spaced/things'
-   get '/:controller(/:action(/:id))'
+    get '/name/spaced_things(/:action)' => 'name/spaced_things'
+    get '/deep/name_spaced/things(/:action)' => 'deep/name_spaced/things'
+    get '/:controller(/:action(/:id))'
   end
 end
 
@@ -146,7 +151,6 @@ end
 class Test::Unit::TestCase < Minitest::Test
   include Authorization::TestHelper
 end
-
 
 class ActiveSupport::TestCase
   include Authorization::TestHelper
