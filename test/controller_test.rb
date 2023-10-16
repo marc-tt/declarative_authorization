@@ -12,7 +12,7 @@ class ActionController::Base
   class << self
     def before_actions
       filters = _process_action_callbacks.select { |c| c.kind == :before }
-      filters.map! { |c| c.raw_filter }
+      filters.map! { |c| c.filter }
     end
 
     alias_method :before_filters, :before_actions
