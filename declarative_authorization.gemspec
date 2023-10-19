@@ -4,7 +4,7 @@ Gem::Specification.new do |s|
   s.name = "declarative_authorization"
   s.version = "2.0.0.pre"
 
-  s.required_ruby_version = ">= 3.0.6"
+  s.required_ruby_version = ">= 3.0.4"
   s.authors = ["Steffen Bartsch"]
   s.summary = "declarative_authorization is a Rails plugin for maintainable authorization based on readable authorization rules."
   s.email = "sbartsch@tzi.org"
