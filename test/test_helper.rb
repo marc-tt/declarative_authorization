@@ -109,7 +109,6 @@ class TestApp
     config.eager_load = false
     config.secret_key_base = "testingpurposesonly"
     config.active_support.deprecation = :stderr
-    config.active_record.legacy_connection_handling = false
     database_path = File.expand_path('../database.yml', __FILE__)
     config.paths['config/database'] = database_path
     initialize!
